@@ -12,7 +12,7 @@ var MIME_MAP = {
 var storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const isValid = MIME_MAP[file.mimetype];
-    const error = new Error("Invaild Mime type");
+    let error = new Error("Invaild Mime type");
     if (isValid) {
       error = null;
     }
@@ -25,19 +25,37 @@ var storage = multer.diskStorage({
   },
 });
 
-router.post("",multer(storage).single('image'), (req, res, next) => {
-  const post = new Post({ title: req.body.title, content: req.body.content });
-  post
-    .save()
-    .then((result) => {
-      res
-        .status(201)
-        .json({ message: "Post added successfully", postId: result._id });
-    })
-    .catch((err) => {
-      res.status(400).json({ message: "Post not added", postId: null });
+router.post(
+  "",
+  multer({ storage: storage }).single("image"),
+  (req, res, next) => {
+    const url = req.protocol + "://" + req.get("host");
+    const post = new Post({
+      title: req.body.title,
+      content: req.body.content,
+      imagePath: url,
     });
-});
+    post
+      .save()
+      .then((result) => {
+        res
+          .status(201)
+          .json({
+            message: "Post added successfully",
+            post: {
+              id: result._id,
+              title: result.title,
+              content: result.content,
+              imagePath: result.imagePath
+              // ...result
+            },
+          });
+      })
+      .catch((err) => {
+        res.status(400).json({ message: "Post not added", postId: null });
+      });
+  }
+);
 
 router.get("", (req, res, next) => {
   Post.find({})
