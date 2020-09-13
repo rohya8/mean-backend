@@ -33,7 +33,7 @@ router.post(
     const post = new Post({
       title: req.body.title,
       content: req.body.content,
-      imagePath: url,
+      imagePath: url + "/images/"+req.file.filename,
     });
     post
       .save()
@@ -43,11 +43,11 @@ router.post(
           .json({
             message: "Post added successfully",
             post: {
+              ...result,
               id: result._id,
-              title: result.title,
+              /* title: result.title,
               content: result.content,
-              imagePath: result.imagePath
-              // ...result
+              imagePath: result.imagePath */
             },
           });
       })
