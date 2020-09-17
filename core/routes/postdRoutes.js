@@ -25,6 +25,7 @@ var storage = multer.diskStorage({
   },
 });
 
+// Save post
 router.post(
   "",
   multer({ storage: storage }).single("image"),
@@ -33,23 +34,18 @@ router.post(
     const post = new Post({
       title: req.body.title,
       content: req.body.content,
-      imagePath: url + "/images/"+req.file.filename,
+      imagePath: url + "/images/" + req.file.filename,
     });
     post
       .save()
       .then((result) => {
-        res
-          .status(201)
-          .json({
-            message: "Post added successfully",
-            post: {
-              ...result,
-              id: result._id,
-              /* title: result.title,
-              content: result.content,
-              imagePath: result.imagePath */
-            },
-          });
+        res.status(201).json({
+          message: "Post added successfully",
+          post: {
+            ...result,
+            id: result._id,
+          },
+        });
       })
       .catch((err) => {
         res.status(400).json({ message: "Post not added", postId: null });
@@ -57,6 +53,7 @@ router.post(
   }
 );
 
+// Retrieve all posts
 router.get("", (req, res, next) => {
   Post.find({})
     .then((result) => {
@@ -73,6 +70,7 @@ router.get("", (req, res, next) => {
     });
 });
 
+// Delete a post
 router.delete("/:id", (req, res, next) => {
   Post.deleteOne({ _id: req.params.id })
     .then(() => {
@@ -87,7 +85,8 @@ router.delete("/:id", (req, res, next) => {
     });
 });
 
-router.put("", (req, res) => {
+// Update a post
+router.put("", multer({ storage: storage }).single("image"), (req, res) => {
   Post.updateOne(
     { _id: req.body.id },
     {
@@ -110,6 +109,7 @@ router.put("", (req, res) => {
     });
 });
 
+// Retrieve a post
 router.get("/:id", (req, res, next) => {
   Post.findById(req.params.id)
     .then((result) => {
