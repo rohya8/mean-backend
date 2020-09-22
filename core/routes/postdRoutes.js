@@ -55,11 +55,23 @@ router.post(
 
 // Retrieve all posts
 router.get("", (req, res, next) => {
-  Post.find({})
+  const pageSize = +req.query.pageSize;
+  const page = +req.query.page;
+  const postQuery = Post.find({});
+  let retrievePost;
+  if (pageSize && page) {
+    postQuery.skip(pageSize * (page - 1)).limit(pageSize);
+  }
+  //TODO: change to aggrregate later
+  postQuery
     .then((result) => {
+      retrievePost=result;
+      return Post.estimatedDocumentCount();
+    }).then((count)=>{
       res.status(200).json({
         message: "Success",
-        posts: result,
+        posts: retrievePost,
+        maxPost:count
       });
     })
     .catch((err) => {
@@ -87,12 +99,18 @@ router.delete("/:id", (req, res, next) => {
 
 // Update a post
 router.put("", multer({ storage: storage }).single("image"), (req, res) => {
+  let imagePath = req.body.imagePath;
+  if (req.file) {
+    const url = req.protocol + "://" + req.get("host");
+    imagePath = url + "/images/" + req.file.filename;
+  }
   Post.updateOne(
     { _id: req.body.id },
     {
       $set: {
         title: req.body.title,
         content: req.body.content,
+        imagePath: imagePath,
       },
     }
   )
