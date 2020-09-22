@@ -1,13 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const uri =
-  "mongodb+srv://rohitw:hqYN8Mhi7rTALUoQ@cluster0.b1zqa.mongodb.net/angular-mean-course?retryWrites=true&w=majority";
+const CONSTANT = require("./CONSTANT.json");
 const app = express();
+const path = require('path');
 const postRoutes = require("./routes/postdRoutes");
 
 mongoose
-  .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(CONSTANT.uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("Connected to Mongodb successfully. ");
   })
@@ -17,6 +17,7 @@ mongoose
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/images',express.static(path.join('images')));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 
+// posts routes
 app.use("/api/posts", postRoutes);
 
 module.exports = app;

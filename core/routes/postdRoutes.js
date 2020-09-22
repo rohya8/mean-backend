@@ -12,7 +12,7 @@ var MIME_MAP = {
 var storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const isValid = MIME_MAP[file.mimetype];
-    const error = new Error("Invaild Mime type");
+    let error = new Error("Invaild Mime type");
     if (isValid) {
       error = null;
     }
@@ -25,26 +25,53 @@ var storage = multer.diskStorage({
   },
 });
 
-router.post("",multer(storage).single('image'), (req, res, next) => {
-  const post = new Post({ title: req.body.title, content: req.body.content });
-  post
-    .save()
-    .then((result) => {
-      res
-        .status(201)
-        .json({ message: "Post added successfully", postId: result._id });
-    })
-    .catch((err) => {
-      res.status(400).json({ message: "Post not added", postId: null });
+// Save post
+router.post(
+  "",
+  multer({ storage: storage }).single("image"),
+  (req, res, next) => {
+    const url = req.protocol + "://" + req.get("host");
+    const post = new Post({
+      title: req.body.title,
+      content: req.body.content,
+      imagePath: url + "/images/" + req.file.filename,
     });
-});
+    post
+      .save()
+      .then((result) => {
+        res.status(201).json({
+          message: "Post added successfully",
+          post: {
+            ...result,
+            id: result._id,
+          },
+        });
+      })
+      .catch((err) => {
+        res.status(400).json({ message: "Post not added", postId: null });
+      });
+  }
+);
 
+// Retrieve all posts
 router.get("", (req, res, next) => {
-  Post.find({})
+  const pageSize = +req.query.pageSize;
+  const page = +req.query.page;
+  const postQuery = Post.find({});
+  let retrievePost;
+  if (pageSize && page) {
+    postQuery.skip(pageSize * (page - 1)).limit(pageSize);
+  }
+  //TODO: change to aggrregate later
+  postQuery
     .then((result) => {
+      retrievePost=result;
+      return Post.estimatedDocumentCount();
+    }).then((count)=>{
       res.status(200).json({
         message: "Success",
-        posts: result,
+        posts: retrievePost,
+        maxPost:count
       });
     })
     .catch((err) => {
@@ -55,6 +82,7 @@ router.get("", (req, res, next) => {
     });
 });
 
+// Delete a post
 router.delete("/:id", (req, res, next) => {
   Post.deleteOne({ _id: req.params.id })
     .then(() => {
@@ -69,13 +97,20 @@ router.delete("/:id", (req, res, next) => {
     });
 });
 
-router.put("", (req, res) => {
+// Update a post
+router.put("", multer({ storage: storage }).single("image"), (req, res) => {
+  let imagePath = req.body.imagePath;
+  if (req.file) {
+    const url = req.protocol + "://" + req.get("host");
+    imagePath = url + "/images/" + req.file.filename;
+  }
   Post.updateOne(
     { _id: req.body.id },
     {
       $set: {
         title: req.body.title,
         content: req.body.content,
+        imagePath: imagePath,
       },
     }
   )
@@ -92,6 +127,7 @@ router.put("", (req, res) => {
     });
 });
 
+// Retrieve a post
 router.get("/:id", (req, res, next) => {
   Post.findById(req.params.id)
     .then((result) => {
