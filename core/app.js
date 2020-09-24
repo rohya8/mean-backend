@@ -3,12 +3,18 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const CONSTANT = require("./CONSTANT.json");
 const app = express();
-const path = require('path');
+const path = require("path");
 const postRoutes = require("./routes/postdRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 mongoose
-  .connect(CONSTANT.uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(CONSTANT.uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    keepAlive: true,
+    keepAliveInitialDelay: 300000
+  })
   .then(() => {
     console.log("Connected to Mongodb successfully. ");
   })
@@ -18,7 +24,7 @@ mongoose
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use('/images',express.static(path.join('images')));
+app.use("/images", express.static(path.join("images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
