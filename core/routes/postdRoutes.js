@@ -65,13 +65,13 @@ router.get("", (req, res, next) => {
   //TODO: change to aggrregate later
   postQuery
     .then((result) => {
-      retrievePost=result;
+      retrievePost = result;
       return Post.estimatedDocumentCount();
-    }).then((count)=>{
+    }).then((count) => {
       res.status(200).json({
         message: "Success",
         posts: retrievePost,
-        maxPost:count
+        maxPost: count
       });
     })
     .catch((err) => {

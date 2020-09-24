@@ -5,6 +5,7 @@ const CONSTANT = require("./CONSTANT.json");
 const app = express();
 const path = require('path');
 const postRoutes = require("./routes/postdRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 mongoose
   .connect(CONSTANT.uri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -34,5 +35,6 @@ app.use((req, res, next) => {
 
 // posts routes
 app.use("/api/posts", postRoutes);
+app.use("/api/user", userRoutes);
 
 module.exports = app;
