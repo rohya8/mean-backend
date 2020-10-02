@@ -1,3 +1,6 @@
 {
-  "uri": "mongodb+srv://rohitw:hqYN8Mhi7rTALUoQ@cluster0.b1zqa.mongodb.net/angular-mean-course?retryWrites=true&w=majority"
+  "uri": "mongodb+srv://rohitw:hqYN8Mhi7rTALUoQ@cluster0.b1zqa.mongodb.net/angular-mean-course?retryWrites=true&w=majority",
+  "erroMsg": "We couldn’t find an account matching the username and password you entered. Please check your username and password and try again.",
+  "tryAgain":"how_can_i_help_you",
+  "loginMsg":"Unauthorized action, Please login."
 }
