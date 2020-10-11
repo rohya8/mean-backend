@@ -37,6 +37,7 @@ router.post(
       title: req.body.title,
       content: req.body.content,
       imagePath: url + "/images/" + req.file.filename,
+      creator: req.userData.userId
     });
     post
       .save()
@@ -85,12 +86,17 @@ router.get("", (req, res, next) => {
 });
 
 // Delete a post
-router.delete("/:id",authCheck, (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id })
-    .then(() => {
-      res.status(200).json({
-        message: "Post delete successfully",
-      });
+router.delete("/:id", authCheck, (req, res, next) => {
+  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId })
+    .then(result => {
+      if (result.deletedCount > 0) {
+        res.status(200).json({
+          message: "Post delete successfully",
+        });
+      } else {
+        res.status(401).json({ message: "Unauthorized action" });
+      }
+
     })
     .catch(() => {
       res.status(400).json({
@@ -100,14 +106,14 @@ router.delete("/:id",authCheck, (req, res, next) => {
 });
 
 // Update a post
-router.put("",authCheck, multer({ storage: storage }).single("image"), (req, res) => {
+router.put("", authCheck, multer({ storage: storage }).single("image"), (req, res) => {
   let imagePath = req.body.imagePath;
   if (req.file) {
     const url = req.protocol + "://" + req.get("host");
     imagePath = url + "/images/" + req.file.filename;
   }
   Post.updateOne(
-    { _id: req.body.id },
+    { _id: req.body.id, creator: req.userData.userId },
     {
       $set: {
         title: req.body.title,
@@ -117,9 +123,13 @@ router.put("",authCheck, multer({ storage: storage }).single("image"), (req, res
     }
   )
     .then((result) => {
-      res.status(200).json({
-        message: "Post update successfully.",
-      });
+      if (result.nModified > 0) {
+        res.status(200).json({
+          message: "Post update successfully.",
+        });
+      } else {
+        res.status(401).json({ message: "Unauthorized action" });
+      }
     })
     .catch((err) => {
       console.error(err);
@@ -148,3 +158,11 @@ router.get("/:id", (req, res, next) => {
 });
 
 module.exports = router;
+
+process
+  .on('unhandledRejection', (reason, p) => {
+    console.error(reason, 'Unhandled Rejection at ', p);
+  })
+  .on('uncaughtException', err => {
+    console.error('Uncaught Exception thrown', err);
+  });

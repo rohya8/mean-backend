@@ -23,6 +23,7 @@ router.post("/signup", (req, res, next) => {
                     });
                 })
                 .catch((err) => {
+                    console.log(err)
                     res.status(500).json({
                         error: err,
                     });
@@ -41,7 +42,7 @@ router.post("/login", (req, res, next) => {
                     message: CONSTANT.erroMsg,
                 });
             }
-            userDetails=user;
+            userDetails = user;
             return brcypt.compare(req.body.password, user.password);
         })
         .then((result) => {
@@ -59,7 +60,9 @@ router.post("/login", (req, res, next) => {
                 { expiresIn: "1h" }
             );
             res.status(200).json({
-                token:token
+                token: token,
+                expiresIn: 3600,
+                userId: userDetails._id
             });
         })
         .catch((err) => {
@@ -70,3 +73,11 @@ router.post("/login", (req, res, next) => {
 });
 
 module.exports = router;
+
+process
+    .on('unhandledRejection', (reason, p) => {
+        console.error(reason, 'Unhandled Rejection at ', p);
+    })
+    .on('uncaughtException', err => {
+        console.error('Uncaught Exception thrown', err);
+    });
