@@ -119,6 +119,7 @@ router.put("", authCheck, multer({ storage: storage }).single("image"), (req, re
         title: req.body.title,
         content: req.body.content,
         imagePath: imagePath,
+        creator: req.userData.userId
       },
     }
   )
