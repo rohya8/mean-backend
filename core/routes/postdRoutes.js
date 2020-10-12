@@ -3,6 +3,7 @@ const Post = require("../models/post");
 const router = express.Router();
 const multer = require("multer");
 const authCheck = require("../middleware/check-auth");
+const CONSTANT = require('../CONSTANT.json');
 
 var MIME_MAP = {
   "image/png": "png",
@@ -51,7 +52,7 @@ router.post(
         });
       })
       .catch((err) => {
-        res.status(400).json({ message: "Post not added", postId: null });
+        res.status(500).json({ message: CONSTANT.post_create_err_message });
       });
   }
 );
@@ -77,10 +78,10 @@ router.get("", (req, res, next) => {
         maxPost: count
       });
     })
-    .catch((err) => {
-      res.status(400).json({
-        message: "Something went Wrong",
-        posts: [],
+    .catch(err => {
+      res.status(500).json({
+        message: CONSTANT.post_retrieve_err_message
+
       });
     });
 });
@@ -99,8 +100,8 @@ router.delete("/:id", authCheck, (req, res, next) => {
 
     })
     .catch(() => {
-      res.status(400).json({
-        message: "Post not deleted.",
+      res.status(500).json({
+        message: CONSTANT.post_delete_err_message,
       });
     });
 });
@@ -134,8 +135,8 @@ router.put("", authCheck, multer({ storage: storage }).single("image"), (req, re
     })
     .catch((err) => {
       console.error(err);
-      res.status(400).json({
-        message: "Post not updated.",
+      res.status(500).json({
+        message: CONSTANT.post_update_err_message,
       });
     });
 });
@@ -150,10 +151,9 @@ router.get("/:id", (req, res, next) => {
         res.status(404).json({ message: "Post not found." });
       }
     })
-    .catch((err) => {
-      res.status(400).json({
-        message: "Something went Wrong",
-        posts: [],
+    .catch(err => {
+      res.status(500).json({
+        message: CONSTANT.post_retrieve_err_message
       });
     });
 });

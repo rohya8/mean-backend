@@ -5,6 +5,7 @@ const brcypt = require("bcrypt");
 const CONSTANT = require("../CONSTANT.json");
 const jwt = require("jsonwebtoken");
 
+// register user 
 router.post("/signup", (req, res, next) => {
     brcypt
         .hash(req.body.password, 10)
@@ -25,13 +26,14 @@ router.post("/signup", (req, res, next) => {
                 .catch((err) => {
                     console.log(err)
                     res.status(500).json({
-                            message: CONSTANT.invalid_credentials,
+                        message: CONSTANT.invalid_credentials,
                     });
                 });
         })
         .catch((err) => { });
 });
 
+// authenticate user 
 router.post("/login", (req, res, next) => {
     let userDetails;
     console.log(`Login : ${req.body.email}`);
