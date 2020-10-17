@@ -34,9 +34,7 @@ exports.userLogin = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then((user) => {
             if (!user) {
-                return res.status(400).json({
-                    message: CONSTANT.erroMsg,
-                });
+                throw new Error('Auth failed');
             }
             userDetails = user;
             return brcypt.compare(req.body.password, user.password);
@@ -52,7 +50,7 @@ exports.userLogin = (req, res, next) => {
                     email: userDetails.email,
                     userId: userDetails._id,
                 },
-                process.env.TRY_AGAIN,
+                process.env.JWT_SECRET_KEY,
                 { expiresIn: "1h" }
             );
             res.status(200).json({
@@ -62,7 +60,7 @@ exports.userLogin = (req, res, next) => {
             });
         })
         .catch((err) => {
-            return res.status(400).json({
+            res.status(400).json({
                 message: CONSTANT.erroMsg,
             });
         });
