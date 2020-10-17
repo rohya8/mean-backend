@@ -1,7 +1,5 @@
 {
-  "uri": "mongodb+srv://rohitw:hqYN8Mhi7rTALUoQ@cluster0.b1zqa.mongodb.net/angular-mean-course?retryWrites=true&w=majority",
   "erroMsg": "Please check your username and password and try again.",
-  "tryAgain":"how_can_i_help_you",
   "invalid_credentials":"Invalid authetication credentials!",
   "post_create_err_message":"Creating post failed!",
   "post_retrieve_err_message":"Fetching post(s) failed!",
