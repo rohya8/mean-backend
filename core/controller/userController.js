@@ -52,7 +52,7 @@ exports.userLogin = (req, res, next) => {
                     email: userDetails.email,
                     userId: userDetails._id,
                 },
-                CONSTANT.tryAgain,
+                process.env.TRY_AGAIN,
                 { expiresIn: "1h" }
             );
             res.status(200).json({

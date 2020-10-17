@@ -5,7 +5,7 @@ const CONSTANT = require("../CONSTANT.json");
 module.exports = (req, res, next) => {
   try {
     let token = req.headers.authorization.split(" ")[1];
-    let decodedToken = jwt.verify(token, CONSTANT.tryAgain);
+    let decodedToken = jwt.verify(token, process.env.TRY_AGAIN);
     req.userData = { email: decodedToken.email, userId: decodedToken.userId };
     next();
   } catch (err) {
