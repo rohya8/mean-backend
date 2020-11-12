@@ -1,9 +1,8 @@
 {
   "erroMsg": "Please check your username and password and try again.",
-  "invalid_credentials":"Invalid authetication credentials!",
-  "post_create_err_message":"Creating post failed!",
-  "post_retrieve_err_message":"Fetching post(s) failed!",
-  "post_update_err_message":"Couldn't update post!",
-  "post_delete_err_message":"Deleting post failed!"
-
+  "invalid_credentials": "Invalid authetication credentials!",
+  "post_create_err_message": "Creating post failed!",
+  "post_retrieve_err_message": "Fetching post(s) failed!",
+  "post_update_err_message": "Couldn't update post!",
+  "post_delete_err_message": "Deleting post failed!"
 }

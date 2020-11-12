@@ -6,7 +6,7 @@ const app = express();
 const path = require("path");
 const postRoutes = require("./routes/postdRoutes");
 const userRoutes = require("./routes/userRoutes");
-require('dotenv').config(); 
+require('dotenv').config();
 
 mongoose
   .connect(process.env.ATLAS_URI, {
@@ -23,7 +23,7 @@ mongoose
     console.log("Mongodb Connection failed");
   });
 
- 
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/images", express.static(path.join("images")));
